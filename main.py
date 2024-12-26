@@ -5,7 +5,8 @@ import streamlit as st
 import folium
 from streamlit_folium import folium_static
 from geopy.geocoders import Nominatim
-
+import pandas as pd
+from io import BytesIO
 
 def get_weather(lat, lon, api_key):
     """Fetch weather data from OpenWeatherMap API."""
@@ -17,7 +18,6 @@ def get_weather(lat, lon, api_key):
         return None
     except Exception as e:
         return None
-
 
 def main():
     st.title("Earthquakes, Tsunamis, and Weather Visualization")
@@ -101,6 +101,15 @@ def main():
 
                 st.write("### Earthquakes in the Selected Area:")
                 st.map(earthquakes_in_area[["latitude", "longitude"]])
+
+                # Export earthquakes data
+                csv = earthquakes_in_area.to_csv(index=False)
+                st.download_button(
+                    label="Download Earthquake Data as CSV",
+                    data=csv,
+                    file_name="earthquakes.csv",
+                    mime="text/csv",
+                )
             else:
                 st.info("No earthquakes found in the selected area.")
 
@@ -115,11 +124,19 @@ def main():
 
                 st.write("### Tsunamis in the Selected Area:")
                 st.map(tsunamis_in_area[["latitude", "longitude"]])
+
+                # Export tsunamis data
+                csv = tsunamis_in_area.to_csv(index=False)
+                st.download_button(
+                    label="Download Tsunami Data as CSV",
+                    data=csv,
+                    file_name="tsunamis.csv",
+                    mime="text/csv",
+                )
             else:
                 st.info("No tsunamis found in the selected area.")
         else:
             st.error("Could not find coordinates for this country")
-
 
 if __name__ == "__main__":
     main()
